@@ -8,12 +8,12 @@ ARG GID
 
 LABEL maintainer="Thien Tran contact@tommytran.io"
 
-RUN --network=none \
-    apk -U upgrade \
+RUN apk -U upgrade \
     && apk add libstdc++ \
     && rm -rf /var/cache/apk/*
 
-RUN usermod -u ${UID} apache \
+RUN --network=none \
+    usermod -u ${UID} apache \
     && groupmod -g ${GID} apache \
     && find / -user 1000 -exec chown -h apache {} \; \
     && find / -group 1000 -exec chgrp -h apache {} \;
