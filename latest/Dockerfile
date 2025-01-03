@@ -8,7 +8,8 @@ ARG GID
 
 LABEL maintainer="Thien Tran contact@tommytran.io"
 
-RUN apk -U upgrade \
+RUN --network=none \
+    apk -U upgrade \
     && apk add libstdc++ \
     && rm -rf /var/cache/apk/*
 
