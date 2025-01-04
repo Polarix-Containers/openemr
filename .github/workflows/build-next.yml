@@ -32,7 +32,7 @@ jobs:
 
       - name: Extract version for tags
         run: |
-          echo "FULL_VERSION=$(grep -oP '(?<=VERSION=).*' next/Dockerfile)" >> $GITHUB_ENV
+          echo "FULL_VERSION=$(grep -oP -m 1 '(?<=VERSION=).*' next/Dockerfile)" >> $GITHUB_ENV
 
       # Add support for more platforms with QEMU
       - name: Set up QEMU
