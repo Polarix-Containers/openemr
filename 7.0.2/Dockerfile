@@ -22,7 +22,7 @@ RUN apk -U upgrade \
         ${PHP}-xml ${PHP}-xsl ${PHP}-gd ${PHP}-zip ${PHP}-soap ${PHP}-mbstring ${PHP}-zlib \
         ${PHP}-mysqli ${PHP}-sockets ${PHP}-xmlreader ${PHP}-redis ${PHP}-simplexml ${PHP}-xmlwriter ${PHP}-phar ${PHP}-fileinfo \
         ${PHP}-sodium ${PHP}-calendar ${PHP}-intl ${PHP}-opcache ${PHP}-pecl-apcu \
-        perl mysql-client tar curl imagemagick nodejs npm \
+        perl mysql-client tar curl imagemagick \
         certbot openssl openssl-dev dcron \
         rsync shadow ncurses \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
