@@ -35,8 +35,6 @@ RUN --network=none \
     && find / -user 1000 -exec chown -h apache {} \; \
     && find / -group 1000 -exec chgrp -h apache {} \;
     
-#BELOW LINE NEEDED TO SUPPORT PHP8 ON ALPINE 3.13+; SHOULD BE ABLE TO REMOVE THIS IN FUTURE ALPINE VERSIONS
-RUN ln -s /usr/bin/${PHP} /usr/bin/php
 # Install composer for openemr package building
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
     
