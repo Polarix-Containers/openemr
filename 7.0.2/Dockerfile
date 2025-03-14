@@ -73,17 +73,29 @@ WORKDIR /var/www/localhost/htdocs/openemr
 #configure apache & php properly
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/php.ini /etc/php82/php.ini
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.conf /etc/apache2/conf.d/
+
 #add runner and auto_configure and prevent auto_configure from being run w/o being enabled
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/ssl.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/xdebug.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/auto_configure.php .
-ADD https://github.com/openemr/openemr-devops.git:docker:openemr:${VERSION}:utilities /root/
+
+ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/devtoolsLibrary.source \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/unlock_admin.php \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/unlock_admin.sh /root
+    
 RUN chmod 500 *.sh /root/unlock_admin.sh \
     && chmod 000 auto_configure.php /root/unlock_admin.php
 
 #Bring in pieces used for automatic upgrade process
-ADD https://github.com/openemr/openemr-devops.git:docker:openemr:${VERSION}:upgrade /root
+ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/docker-version \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-1.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-2.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-3.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-4.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-5.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-6.sh /root
+
 RUN chmod 500 /root/fs*
 
 #Fix issue with apache2 dying prematurely
