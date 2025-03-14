@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - '.github/workflows/build-7.0.2.yml'
-      - 'latest/**'
+      - '7.0.2/**'
   schedule:
     # Build the image daily
     - cron: '15 0 * * *'
