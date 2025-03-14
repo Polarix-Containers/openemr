@@ -78,8 +78,7 @@ ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/open
     https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/ssl.sh \
     https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/xdebug.sh \
     https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/auto_configure.php .
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/utilities/unlock_admin.php \
-    https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/utilities/unlock_admin.sh /root/
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/utilities /root/
 RUN chmod 500 *.sh /root/unlock_admin.sh \
     && chmod 000 auto_configure.php /root/unlock_admin.php
 
@@ -89,9 +88,6 @@ RUN chmod 500 /root/fs*
 
 #Fix issue with apache2 dying prematurely
 RUN mkdir -p /run/apache2
-
-#Copy dev tools library to root
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/utilities/devtoolsLibrary.source /root/
 
 #Ensure swarm/orchestration pieces are available if needed
 RUN mkdir /swarm-pieces \
