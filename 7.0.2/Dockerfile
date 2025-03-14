@@ -23,7 +23,7 @@ RUN apk -U upgrade \
         perl mysql-client tar curl imagemagick nodejs npm \
         certbot openssl openssl-dev dcron \
         rsync shadow ncurses \
-    && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf
+    && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
     && rm -rf /var/cache/apk/*
 
 
