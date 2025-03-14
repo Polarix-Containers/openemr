@@ -56,7 +56,7 @@ RUN apk add --no-cache git build-base \
     && composer clearcache \
     && npm cache clear --force \
     && rm -fr node_modules \
-    && cd ../ \
+    && cd ../ \ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/openemr.sh
     && chmod 666 openemr/sites/default/sqlconf.php \
     && chown -R apache openemr/ \
     && mv openemr /var/www/localhost/htdocs/ \
@@ -73,8 +73,12 @@ WORKDIR /var/www/localhost/htdocs/openemr
 ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/php.ini /etc/php82/php.ini
 ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/openemr.conf /etc/apache2/conf.d/
 #add runner and auto_configure and prevent auto_configure from being run w/o being enabled
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/{*.sh,*.php} .
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/utilities/unlock* /root/
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/openemr.sh \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/ssl.sh \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/xdebug.sh \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/auto_configure.php .
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/utilities/unlock_admin.php \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/utilities/unlock_admin.sh /root/
 RUN chmod 500 *.sh /root/unlock_admin.sh \
     && chmod 000 auto_configure.php /root/unlock_admin.php
 
