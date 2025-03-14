@@ -56,7 +56,7 @@ RUN apk add --no-cache git build-base \
     && composer clearcache \
     && npm cache clear --force \
     && rm -fr node_modules \
-    && cd ../
+    && cd ../ \
     && chmod 666 openemr/sites/default/sqlconf.php \
     && chown -R apache openemr/ \
     && mv openemr /var/www/localhost/htdocs/ \
