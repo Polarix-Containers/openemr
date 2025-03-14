@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/build-next.yml'
+      - '.github/workflows/build-7.0.3.yml'
       - 'next/**'
   schedule:
     # Build the image daily
@@ -15,7 +15,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: polarix-containers/openemr
-  TAG: next
+  TAG: 7.0.3
 
 jobs:
   build:
@@ -29,10 +29,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Extract version for tags
-        run: |
-          echo "FULL_VERSION=$(grep -oP -m 1 '(?<=VERSION=).*' next/Dockerfile)" >> $GITHUB_ENV
 
       # Add support for more platforms with QEMU
       - name: Set up QEMU
@@ -56,7 +52,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             ${{ env.TAG }}
-            ${{ env.FULL_VERSION }}
+            next
 
       - name: Build and push Docker image
         id: build-and-push
