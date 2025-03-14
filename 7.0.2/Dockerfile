@@ -83,7 +83,7 @@ RUN chmod 500 *.sh /root/unlock_admin.sh \
     && chmod 000 auto_configure.php /root/unlock_admin.php
 
 #Bring in pieces used for automatic upgrade process
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/upgrade /root
+ADD https://github.com/openemr/openemr-devops.git:docker:openemr:${VERSION}:upgrade /root
 RUN chmod 500 /root/fs*
 
 #Fix issue with apache2 dying prematurely
