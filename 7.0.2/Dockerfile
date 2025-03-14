@@ -70,27 +70,27 @@ RUN apk add --no-cache git build-base \
 WORKDIR /var/www/localhost/htdocs/openemr
 
 #configure apache & php properly
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/php.ini /etc/php82/php.ini
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/openemr.conf /etc/apache2/conf.d/
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/php.ini /etc/php82/php.ini
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/openemr.conf /etc/apache2/conf.d/
 #add runner and auto_configure and prevent auto_configure from being run w/o being enabled
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/openemr.sh \
-    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/ssl.sh \
-    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/xdebug.sh \
-    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/auto_configure.php .
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/utilities/unlock_admin.php \
-    https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/utilities/unlock_admin.sh /root/
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/openemr.sh \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/ssl.sh \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/xdebug.sh \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/auto_configure.php .
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/utilities/unlock_admin.php \
+    https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/utilities/unlock_admin.sh /root/
 RUN chmod 500 *.sh /root/unlock_admin.sh \
     && chmod 000 auto_configure.php /root/unlock_admin.php
 
 #Bring in pieces used for automatic upgrade process
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/upgrade /root
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/upgrade /root
 RUN chmod 500 /root/fs*
 
 #Fix issue with apache2 dying prematurely
 RUN mkdir -p /run/apache2
 
 #Copy dev tools library to root
-ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/utilities/devtoolsLibrary.source /root/
+ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${VERSION}/utilities/devtoolsLibrary.source /root/
 
 #Ensure swarm/orchestration pieces are available if needed
 RUN mkdir /swarm-pieces \
