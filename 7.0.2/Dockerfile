@@ -36,12 +36,12 @@ RUN --network=none \
     && find / -group 1000 -exec chgrp -h apache {} \;
     
 #BELOW LINE NEEDED TO SUPPORT PHP8 ON ALPINE 3.13+; SHOULD BE ABLE TO REMOVE THIS IN FUTURE ALPINE VERSIONS
-RUN ln -s /usr/bin/php82 /usr/bin/php
+RUN ln -s /usr/bin/${PHP} /usr/bin/php
 # Install composer for openemr package building
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
     
 RUN apk add --no-cache git build-base \
-    && git clone https://github.com/openemr/openemr.git --branch rel-702 --depth 1 \
+    && git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
@@ -72,7 +72,7 @@ RUN apk add --no-cache git build-base \
 WORKDIR /var/www/localhost/htdocs/openemr
 
 #configure apache & php properly
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/php.ini /etc/php82/php.ini
+ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/php.ini /etc/${PHP}/php.ini
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.conf /etc/apache2/conf.d/
 
 #add runner and auto_configure and prevent auto_configure from being run w/o being enabled
