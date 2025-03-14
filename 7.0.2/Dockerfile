@@ -56,7 +56,7 @@ RUN apk add --no-cache git build-base \
     && composer clearcache \
     && npm cache clear --force \
     && rm -fr node_modules \
-    && cd ../ \ADD https://github.com/openemr/openemr-devops.git:docker/openemr/${TAG}/openemr.sh
+    && cd ../
     && chmod 666 openemr/sites/default/sqlconf.php \
     && chown -R apache openemr/ \
     && mv openemr /var/www/localhost/htdocs/ \
