@@ -36,7 +36,7 @@ RUN --network=none \
     && find / -user 1000 -exec chown -h apache {} \; \
     && find / -group 1000 -exec chgrp -h apache {} \;
     
-RUN git clone https://github.com/openemr/openemr.git --branch rel-702 --depth 1 \
+RUN git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \

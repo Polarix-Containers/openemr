@@ -39,7 +39,7 @@ RUN --network=none \
 #BELOW LINE NEEDED TO SUPPORT PHP8 ON ALPINE 3.13+; SHOULD BE ABLE TO REMOVE THIS IN FUTURE ALPINE VERSIONS
 RUN ln -s /usr/bin/${PHP} /usr/bin/php
     
-RUN git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
+RUN git clone https://github.com/openemr/openemr.git --branch rel-702 --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
