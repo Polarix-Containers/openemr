@@ -35,7 +35,7 @@ RUN --network=none \
     && find / -user 1000 -exec chown -h apache {} \; \
     && find / -group 1000 -exec chgrp -h apache {} \;
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     && git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
