@@ -29,13 +29,15 @@ RUN apk -U upgrade \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
     && rm -rf /var/cache/apk/*
 
-
 RUN --network=none \
     usermod -u ${UID} apache \
     && groupmod -g ${GID} apache \
     && find / -user 1000 -exec chown -h apache {} \; \
     && find / -group 1000 -exec chgrp -h apache {} \;
     
+#BELOW LINE NEEDED TO SUPPORT PHP8 ON ALPINE 3.13+; SHOULD BE ABLE TO REMOVE THIS IN FUTURE ALPINE VERSIONS
+RUN ln -s /usr/bin/${PHP} /usr/bin/php
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     && git clone https://github.com/openemr/openemr.git --branch rel-702 --depth 1 \
     && rm -rf openemr/.git \
