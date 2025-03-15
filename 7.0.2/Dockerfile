@@ -17,7 +17,7 @@ LABEL maintainer="Thien Tran contact@tommytran.io"
 #Install dependencies and fix issue in apache
 RUN apk -U upgrade \
     && apk add libstdc++ \
-        apache2 apache2-ssl apache2-utils ${PHP} ${PHP}-tokenizer ${PHP}-ctype ${PHP}-session ${PHP}-apache2 \
+        apache2 apache2-ssl apache2-utils git ${PHP} ${PHP}-tokenizer ${PHP}-ctype ${PHP}-session ${PHP}-apache2 \
         ${PHP}-json ${PHP}-pdo ${PHP}-pdo_mysql ${PHP}-curl ${PHP}-ldap ${PHP}-openssl ${PHP}-iconv \
         ${PHP}-xml ${PHP}-xsl ${PHP}-gd ${PHP}-zip ${PHP}-soap ${PHP}-mbstring ${PHP}-zlib \
         ${PHP}-mysqli ${PHP}-sockets ${PHP}-xmlreader ${PHP}-redis ${PHP}-simplexml ${PHP}-xmlwriter ${PHP}-phar ${PHP}-fileinfo \
@@ -25,7 +25,7 @@ RUN apk -U upgrade \
         perl mysql-client tar curl imagemagick \
         certbot openssl openssl-dev dcron \
         rsync shadow ncurses \
-        build-base composer git \
+        build-base \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
     && rm -rf /var/cache/apk/*
 
@@ -36,10 +36,8 @@ RUN --network=none \
     && find / -user 1000 -exec chown -h apache {} \; \
     && find / -group 1000 -exec chgrp -h apache {} \;
     
-#BELOW LINE NEEDED TO SUPPORT PHP8 ON ALPINE 3.13+; SHOULD BE ABLE TO REMOVE THIS IN FUTURE ALPINE VERSIONS
-RUN ln -s /usr/bin/${PHP} /usr/bin/php
-    
-RUN git clone https://github.com/openemr/openemr.git --branch rel-702 --depth 1 \
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+    && git clone https://github.com/openemr/openemr.git --branch rel-702 --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \

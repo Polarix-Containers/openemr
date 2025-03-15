@@ -25,18 +25,18 @@ RUN apk -U upgrade \
         perl mysql-client mariadb-connector-c tar curl imagemagick \
         certbot openssl openssl-dev dcron \
         rsync shadow ncurses \
-        build-base composer git \
+        build-base \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
     && rm -rf /var/cache/apk/*
-
 
 RUN --network=none \
     usermod -u ${UID} apache \
     && groupmod -g ${GID} apache \
     && find / -user 1000 -exec chown -h apache {} \; \
     && find / -group 1000 -exec chgrp -h apache {} \;
-    
-RUN git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+    && git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
