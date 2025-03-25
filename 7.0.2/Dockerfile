@@ -46,8 +46,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
     && composer install --no-dev \
     && npm install --unsafe-perm \
     && npm run build \
+    && npm audit fix \
     && cd ccdaservice \
     && npm install --unsafe-perm \
+    && npm audit fix \
     && cd ../ \
     && composer global require phing/phing \
     && /root/.composer/vendor/bin/phing vendor-clean \
