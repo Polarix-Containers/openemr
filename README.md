@@ -4,6 +4,7 @@
 
 ### Features & usage
 - Built on the [official image](https://github.com/openemr/openemr-devops) to be used as a drop-in replacement.
+- Removed certbot. You should be using a separate container instead.
 - Unprivileged image: you should check your volumes' permissions (eg `/data`), default UID/GID is 200007. 
 
 ### Licensing

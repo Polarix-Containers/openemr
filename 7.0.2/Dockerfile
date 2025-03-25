@@ -23,7 +23,7 @@ RUN apk -U upgrade \
         ${PHP}-mysqli ${PHP}-sockets ${PHP}-xmlreader ${PHP}-redis ${PHP}-simplexml ${PHP}-xmlwriter ${PHP}-phar ${PHP}-fileinfo \
         ${PHP}-sodium ${PHP}-calendar ${PHP}-intl ${PHP}-opcache ${PHP}-pecl-apcu \
         perl mysql-client tar curl imagemagick \
-        certbot openssl openssl-dev dcron \
+        openssl openssl-dev dcron \
         rsync shadow ncurses \
         build-base \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
@@ -108,5 +108,5 @@ RUN mkdir /swarm-pieces \
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
 
-VOLUME [ "/etc/letsencrypt/", "/etc/ssl" ]
+VOLUME [ "/etc/ssl" ]
 CMD [ "./openemr.sh" ]
