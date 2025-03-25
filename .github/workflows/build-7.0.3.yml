@@ -1,4 +1,4 @@
-name: Build next
+name: Build 7.0.3
 
 on:
   workflow_dispatch:
