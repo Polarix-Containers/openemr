@@ -27,7 +27,8 @@ RUN apk -U upgrade \
         rsync shadow ncurses \
         build-base \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && npm install -g npm@latest
 
 RUN --network=none \
     usermod -u ${UID} apache \
