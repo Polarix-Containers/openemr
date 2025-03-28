@@ -25,28 +25,32 @@ RUN apk -U upgrade \
         perl mysql-client mariadb-connector-c tar curl imagemagick \
         openssl openssl-dev dcron \
         rsync shadow ncurses \
-        build-base \
+        # Adding make separately from build-base here cuz we wanna keep it later
+        build-base make \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
     && rm -rf /var/cache/apk/* \
     && npm update -g npm
 
 RUN --network=none \
     usermod -u ${UID} apache \
-    && groupmod -g ${GID} apache \
-    && find / -user 1000 -exec chown -h apache {} \; \
-    && find / -group 1000 -exec chgrp -h apache {} \;
+    && groupmod -g ${GID} apache
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
+# Alpine hard coded the symlink only for specific php version on specific Alpine release, which is not very nice.
+# We are just removing the symlink and create it here so the code is easy to copy-paste.
+
+RUN rm -f /usr/bin/php \
+    && ln -s /usr/bin/${PHP} /usr/bin/php \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     && git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
     && npm install --unsafe-perm \
-    && npm audit fix \
+    && npm audit fix --audit-level=none \
     && npm run build \
     && cd ccdaservice \
     && npm install --unsafe-perm \
-    && npm audit fix \
+    && npm audit fix --audit-level=none \
     && cd ../ \
     && composer global require phing/phing \
     && /root/.composer/vendor/bin/phing vendor-clean \
@@ -57,8 +61,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
     && npm cache clear --force \
     && rm -fr node_modules \
     && cd ../ \
-    && chmod 666 openemr/sites/default/sqlconf.php \
-    && chown -R apache openemr/ \
     && mv openemr /var/www/localhost/htdocs/ \
     && mkdir -p /etc/ssl/certs /etc/ssl/private \
     && apk del --no-cache git build-base \
@@ -71,7 +73,7 @@ WORKDIR /var/www/localhost/htdocs/openemr
 
 #configure apache & php properly
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/php.ini /etc/${PHP}/php.ini
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.conf /etc/apache2/conf.d/
+ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.conf /etc/apache2/conf.d/
 
 #add runner and auto_configure and prevent auto_configure from being run w/o being enabled
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.sh \
@@ -81,7 +83,8 @@ ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/d
 
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/devtoolsLibrary.source \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/unlock_admin.php \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/unlock_admin.sh /root
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/unlock_admin.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/ssl.sh /root
     
 RUN chmod 500 *.sh /root/unlock_admin.sh \
     && chmod 000 auto_configure.php /root/unlock_admin.php
@@ -94,17 +97,30 @@ ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/d
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-4.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-5.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-6.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-6.sh /root
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-7.sh /root
 
 RUN chmod 500 /root/fs*
 
 #Fix issue with apache2 dying prematurely
 RUN mkdir -p /run/apache2
 
+#Set file and directory permissions
+RUN chown -R apache /var/www/localhost/htdocs/openemr/ \
+    && find . -type d -not -path "./sites/default/documents/*" -not -perm 500 -exec chmod 500 {} \+ \
+    && find . -type f -not -path "./sites/default/documents/*" -not -path './openemr.sh' -not -perm 400 -exec chmod 400 {} \+ \
+    && chmod 500 openemr.sh /root/ssl.sh \
+    && find sites/default/documents -not -perm 700 -exec chmod 700 {} \+ \
+    && chmod 666 sites/default/sqlconf.php \
+    && chmod 755 /root/ \
+    && chmod 444 /root/devtoolsLibrary.source /root/docker-version
+
 #Ensure swarm/orchestration pieces are available if needed
 RUN mkdir /swarm-pieces \
     && rsync --owner --group --perms --delete --recursive --links /etc/ssl /swarm-pieces/ \
     && rsync --owner --group --perms --delete --recursive --links /var/www/localhost/htdocs/openemr/sites /swarm-pieces/
+
+#Clean up trash
+RUN rm -rf /tmp
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"

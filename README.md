@@ -1,6 +1,6 @@
 # openemr
 
-![Build, scan & push](https://github.com/Polarix-Containers/openemr/actions/workflows/build-7.0.2.yml/badge.svg)
+![Build, scan & push](https://github.com/Polarix-Containers/openemr/actions/workflows/build-7.0.3.yml/badge.svg)
 
 ### Features & usage
 - Built on the [official image](https://github.com/openemr/openemr-devops) to be used as a drop-in replacement.
