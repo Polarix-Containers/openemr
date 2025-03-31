@@ -102,11 +102,6 @@ RUN chown -R php-fpm /var/www/localhost/htdocs/openemr/ \
     && chmod 755 /root/ \
     && chmod 444 /root/devtoolsLibrary.source /root/docker-version
 
-#Ensure swarm/orchestration pieces are available if needed
-RUN mkdir /swarm-pieces \
-    && rsync --owner --group --perms --delete --recursive --links /swarm-pieces/ \
-    && rsync --owner --group --perms --delete --recursive --links /var/www/localhost/htdocs/openemr/sites /swarm-pieces/
-
 #Clean up trash
 RUN rm -rf /tmp
 
