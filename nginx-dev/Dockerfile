@@ -30,10 +30,6 @@ RUN apk -U upgrade \
     && rm -rf /var/cache/apk/* \
     && npm update -g npm
 
-RUN --network=none \
-    usermod -u ${UID} php-fpm \
-    && groupmod -g ${GID} php-fpm
-
 # Alpine hard coded the symlink only for specific php version on specific Alpine release, which is not very nice.
 # We are just removing the symlink and create it here so the code is easy to copy-paste.
 
