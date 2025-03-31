@@ -1,4 +1,5 @@
 ARG VERSION=7.0.3
+ARG TAG=v7_0_3_1
 ARG UID=200007
 ARG GID=200007
 ARG NODE=20
@@ -6,6 +7,7 @@ ARG PHP=php83
 
 FROM node:${NODE}-alpine
 ARG VERSION
+ARG TAG
 ARG UID
 ARG GID
 ARG PHP
@@ -41,7 +43,7 @@ RUN --network=none \
 RUN rm -f /usr/bin/php \
     && ln -s /usr/bin/${PHP} /usr/bin/php \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
-    && git clone https://github.com/openemr/openemr.git --branch rel-703 --depth 1 \
+    && git clone https://github.com/openemr/openemr.git --branch ${TAG} --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
