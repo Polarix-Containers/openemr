@@ -72,7 +72,7 @@ RUN rm -f /usr/bin/php \
 WORKDIR /var/www/localhost/htdocs/openemr
 
 #configure apache & php properly
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/php.ini /etc/${PHP}/php.ini
+ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/php.ini /etc/${PHP}/php.ini
 ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.conf /etc/apache2/conf.d/
 
 #add runner and auto_configure and prevent auto_configure from being run w/o being enabled
