@@ -55,7 +55,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            ${{ FULL_VERSION }}
+            ${{ env.FULL_VERSION }}
             ${{ env.TAG }}
             latest
 
