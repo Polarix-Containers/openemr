@@ -30,6 +30,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Extract version for tags
+        run: |
+          echo "FULL_VERSION=$(grep -oP '(?<=FULL_VERSION=).*' Dockerfile)" >> $GITHUB_ENV
+
       # Add support for more platforms with QEMU
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -51,8 +55,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            ${{ FULL_VERSION }}
             ${{ env.TAG }}
-            next
+            latest
 
       - name: Build and push Docker image
         id: build-and-push

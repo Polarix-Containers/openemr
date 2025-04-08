@@ -1,4 +1,5 @@
-ARG VERSION=7.0.3.2
+ARG FULL_VERSION=7.0.3.3
+ARG MAJOR_VERSION=7.0.3
 ARG UID=200007
 ARG GID=200007
 ARG NODE=20
@@ -6,7 +7,7 @@ ARG PHP=php83
 
 FROM node:${NODE}-alpine
 ARG VERSION
-ARG TAG
+ARG MAJOR_VERSION
 ARG UID
 ARG GID
 ARG PHP
@@ -39,11 +40,10 @@ RUN --network=none \
 # Alpine hard coded the symlink only for specific php version on specific Alpine release, which is not very nice.
 # We are just removing the symlink and create it here so the code is easy to copy-paste.
 
-RUN TAG=v$(echo $VERSION | sed 's/\./_/g') \
-    rm -f /usr/bin/php \
+RUN rm -f /usr/bin/php \
     && ln -s /usr/bin/${PHP} /usr/bin/php \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
-    && git clone https://github.com/openemr/openemr.git --branch ${TAG} --depth 1 \
+    && git clone https://github.com/openemr/openemr.git --branch v$(echo $FULL_VERSION | sed 's/\./_/g') --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
@@ -74,32 +74,32 @@ RUN TAG=v$(echo $VERSION | sed 's/\./_/g') \
 WORKDIR /var/www/localhost/htdocs/openemr
 
 #configure apache & php properly
-ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/php.ini /etc/${PHP}/php.ini
-ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.conf /etc/apache2/conf.d/
+ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/php.ini /etc/${PHP}/php.ini
+ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/openemr.conf /etc/apache2/conf.d/
 
 #add runner and auto_configure and prevent auto_configure from being run w/o being enabled
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/openemr.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/ssl.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/xdebug.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/auto_configure.php .
+ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/openemr.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/ssl.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/xdebug.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/auto_configure.php .
 
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/devtoolsLibrary.source \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/unlock_admin.php \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/utilities/unlock_admin.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/ssl.sh /root
+ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/devtoolsLibrary.source \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/unlock_admin.php \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/unlock_admin.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/ssl.sh /root
     
 RUN chmod 500 *.sh /root/unlock_admin.sh \
     && chmod 000 auto_configure.php /root/unlock_admin.php
 
 #Bring in pieces used for automatic upgrade process
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/docker-version \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-1.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-2.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-3.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-4.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-5.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-6.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${VERSION}/upgrade/fsupgrade-7.sh /root
+ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/docker-version \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-1.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-2.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-3.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-4.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-5.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-6.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-7.sh /root
 
 RUN chmod 500 /root/fs*
 
