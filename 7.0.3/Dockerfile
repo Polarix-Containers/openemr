@@ -39,7 +39,7 @@ RUN --network=none \
 # Alpine hard coded the symlink only for specific php version on specific Alpine release, which is not very nice.
 # We are just removing the symlink and create it here so the code is easy to copy-paste.
 
-RUN TAG=v$(echo $VERSION | sed 's/\./_/g')
+RUN TAG=v$(echo $VERSION | sed 's/\./_/g') \
     rm -f /usr/bin/php \
     && ln -s /usr/bin/${PHP} /usr/bin/php \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
