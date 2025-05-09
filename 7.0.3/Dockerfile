@@ -2,10 +2,11 @@ ARG FULL_VERSION=7.0.3.3
 ARG MAJOR_VERSION=7.0.3
 ARG UID=200007
 ARG GID=200007
-ARG NODE=20
+#ARG NODE=20
 ARG PHP=php83
 
-FROM node:${NODE}-alpine
+#FROM node:${NODE}-alpine
+FROM alpine
 ARG FULL_VERSION
 ARG MAJOR_VERSION
 ARG UID
@@ -30,8 +31,8 @@ RUN apk -U upgrade \
         # Adding make separately from build-base here cuz we wanna keep it later
         build-base make \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
-    && rm -rf /var/cache/apk/* \
-    && npm update -g npm
+    && rm -rf /var/cache/apk/*
+#    && npm update -g npm
 
 RUN --network=none \
     usermod -u ${UID} apache \
@@ -47,13 +48,13 @@ RUN rm -f /usr/bin/php \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
-    && npm install --unsafe-perm \
-    && npm audit fix --audit-level=none \
-    && npm run build \
-    && cd ccdaservice \
-    && npm install --unsafe-perm \
-    && npm audit fix --audit-level=none \
-    && cd ../ \
+#    && npm install --unsafe-perm \
+#    && npm audit fix --audit-level=none \
+#    && npm run build \
+#    && cd ccdaservice \
+#    && npm install --unsafe-perm \
+#    && npm audit fix --audit-level=none \
+#    && cd ../ \
     && composer global require phing/phing \
     && /root/.composer/vendor/bin/phing vendor-clean \
     && /root/.composer/vendor/bin/phing assets-clean \
