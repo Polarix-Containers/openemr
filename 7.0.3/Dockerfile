@@ -61,7 +61,7 @@ RUN rm -f /usr/bin/php \
     && composer global remove phing/phing \
     && composer dump-autoload --optimize --apcu \
     && composer clearcache \
-    && npm cache clear --force \
+#    && npm cache clear --force \
     && rm -fr node_modules \
     && cd ../ \
     && mv openemr /var/www/localhost/htdocs/ \
