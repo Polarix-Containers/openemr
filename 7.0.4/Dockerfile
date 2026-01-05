@@ -45,7 +45,7 @@ RUN --network=none \
 RUN rm -f /usr/bin/php \
     && ln -s /usr/bin/${PHP} /usr/bin/php \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
-    && git clone https://github.com/openemr/openemr.git --branch v$(echo $FULL_VERSION | sed 's/\./_/g') --depth 1 \
+    && git clone https://github.com/openemr/openemr.git --branch "v$(printf '%s' "$FULL_VERSION" | perl -pe 's/\.0$//; s/\./_/g;')" --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
