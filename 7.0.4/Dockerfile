@@ -1,9 +1,11 @@
-ARG FULL_VERSION=7.0.3.4
-ARG MAJOR_VERSION=7.0.3
+ARG FULL_VERSION=7.0.4.0
+ARG MAJOR_VERSION=7.0.4
 ARG UID=200007
 ARG GID=200007
-ARG NODE=20
-ARG PHP=php83
+# https://github.com/openemr/openemr-devops/actions/runs/20478849441/job/58848597313#step:3:283
+ARG NODE=22
+# https://github.com/openemr/openemr-devops/blob/8cb647d73a505c4e272f522d8bb01fbc2a7ff894/docker/openemr/7.0.4/Dockerfile#L11
+ARG PHP=php84
 
 FROM node:${NODE}-alpine
 ARG FULL_VERSION
@@ -19,14 +21,14 @@ LABEL maintainer="Thien Tran contact@tommytran.io"
 #Install dependencies and fix issue in apache
 RUN apk -U upgrade \
     && apk add libstdc++ \
-        apache2 apache2-ssl apache2-utils apache2-proxy git ${PHP} ${PHP}-tokenizer ${PHP}-ctype ${PHP}-session ${PHP}-apache2 \
-        ${PHP}-json ${PHP}-pdo ${PHP}-pdo_mysql ${PHP}-curl ${PHP}-ldap ${PHP}-openssl ${PHP}-iconv \
-        ${PHP}-xml ${PHP}-xsl ${PHP}-gd ${PHP}-zip ${PHP}-soap ${PHP}-mbstring ${PHP}-zlib \
-        ${PHP}-mysqli ${PHP}-sockets ${PHP}-xmlreader ${PHP}-redis ${PHP}-simplexml ${PHP}-xmlwriter ${PHP}-phar ${PHP}-fileinfo \
-        ${PHP}-sodium ${PHP}-calendar ${PHP}-intl ${PHP}-opcache ${PHP}-pecl-apcu ${PHP}-fpm \
-        perl mysql-client mariadb-connector-c tar curl imagemagick \
-        openssl openssl-dev dcron \
-        rsync shadow ncurses \
+        apache2 apache2-proxy apache2-ssl apache2-utils curl dcron git imagemagick mariadb-client \
+        mariadb-connector-c ncurses openssl openssl-dev perl rsync shadow tar \
+        ${PHP} ${PHP}-apache2 ${PHP}-bcmath ${PHP}-calendar ${PHP}-ctype ${PHP}-curl ${PHP}-dom \
+        ${PHP}-fileinfo ${PHP}-fpm ${PHP}-gd ${PHP}-iconv ${PHP}-intl ${PHP}-json ${PHP}-ldap \
+        ${PHP}-mbstring ${PHP}-mysqli ${PHP}-opcache ${PHP}-openssl ${PHP}-pdo ${PHP}-pdo_mysql \
+        ${PHP}-pecl-apcu ${PHP}-pecl-imagick ${PHP}-phar ${PHP}-redis ${PHP}-session \
+        ${PHP}-simplexml ${PHP}-soap ${PHP}-sockets ${PHP}-sodium ${PHP}-tokenizer ${PHP}-xml \
+        ${PHP}-xmlreader ${PHP}-xmlwriter ${PHP}-xsl ${PHP}-zip ${PHP}-zlib \
         # Adding make separately from build-base here cuz we wanna keep it later
         build-base make \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
@@ -65,7 +67,7 @@ RUN rm -f /usr/bin/php \
     && cd ../ \
     && mv openemr /var/www/localhost/htdocs/ \
     && mkdir -p /etc/ssl/certs /etc/ssl/private \
-    && apk del --no-cache git build-base \
+    && apk del --no-cache build-base \
     && sed -i 's/^ *CustomLog/#CustomLog/' /etc/apache2/httpd.conf \
     && sed -i 's/^ *ErrorLog/#ErrorLog/' /etc/apache2/httpd.conf \
     && sed -i 's/^ *CustomLog/#CustomLog/' /etc/apache2/conf.d/ssl.conf \
@@ -99,7 +101,9 @@ ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/d
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-4.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-5.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-6.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-7.sh /root
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-7.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-8.sh \
+    /root
 
 RUN chmod 500 /root/fs*
 
