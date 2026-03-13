@@ -1,4 +1,4 @@
-name: Build 7.0.4
+name: Build
 
 on:
   workflow_dispatch:
@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/build-7.0.4.yml'
-      - '7.0.4/**'
+      - '.github/workflows/build.yml'
+      - 'Dockerfile'
   schedule:
     # Build the image daily
     - cron: '15 0 * * *'
@@ -15,7 +15,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: polarix-containers/openemr
-  TAG: 7.0.4
 
 jobs:
   build:
@@ -32,7 +31,8 @@ jobs:
 
       - name: Extract version for tags
         run: |
-          echo "FULL_VERSION=$(grep -oP '(?<=FULL_VERSION=).*' ${{ env.TAG }}/Dockerfile)" >> $GITHUB_ENV
+          grep -oP '(?<=^ARG )MAJOR_VERSION=.*' Dockerfile >> $GITHUB_ENV
+          grep -oP '(?<=^ARG )FULL_VERSION=.*' Dockerfile >> $GITHUB_ENV
 
       # Add support for more platforms with QEMU
       - name: Set up QEMU
@@ -56,14 +56,14 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             ${{ env.FULL_VERSION }}
-            ${{ env.TAG }}
+            ${{ env.MAJOR_VERSION }}
             latest
 
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v7
         with:
-          context: ${{ env.TAG }}
+          context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -79,7 +79,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           format: template
           template: '@/contrib/sarif.tpl'
           output: trivy-results.sarif
@@ -90,7 +90,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif
-          category: trivy-${{ env.TAG }}
+          category: trivy-${{ env.FULL_VERSION }}
 
   grype:
     name: Scan current image with Grype
@@ -104,11 +104,11 @@ jobs:
         uses: anchore/scan-action@v7
         id: grype
         with:
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           fail-build: false
 
       - name: Upload Grype scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ${{ steps.grype.outputs.sarif }}
-          category: grype-${{ env.TAG }}
+          category: grype-${{ env.FULL_VERSION }}
