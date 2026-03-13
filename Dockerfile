@@ -1,10 +1,10 @@
-ARG FULL_VERSION=7.0.4.0
-ARG MAJOR_VERSION=7.0.4
+ARG FULL_VERSION=8.0.0.1
+ARG MAJOR_VERSION=8.0.0
 ARG UID=200007
 ARG GID=200007
-# https://github.com/openemr/openemr-devops/actions/runs/20478849441/job/58848597313#step:3:283
+# https://github.com/openemr/openemr-devops/actions/runs/22974229834/job/66698628011#step:6:370
 ARG NODE=22
-# https://github.com/openemr/openemr-devops/blob/8cb647d73a505c4e272f522d8bb01fbc2a7ff894/docker/openemr/7.0.4/Dockerfile#L11
+# https://github.com/openemr/openemr-devops/blob/83140ff796bd00184165abf4835869e005c0bea9/docker/openemr/8.0.0/Dockerfile#L11
 ARG PHP=php84
 
 FROM node:${NODE}-alpine
@@ -87,11 +87,7 @@ ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/d
 
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/devtoolsLibrary.source \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/unlock_admin.php \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/unlock_admin.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/ssl.sh /root
-    
-RUN chmod 500 *.sh /root/unlock_admin.sh \
-    && chmod 000 auto_configure.php /root/unlock_admin.php
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/unlock_admin.sh /root
 
 #Bring in pieces used for automatic upgrade process
 ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/docker-version \
@@ -103,20 +99,20 @@ ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/d
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-6.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-7.sh \
     https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-8.sh \
+    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-9.sh \
     /root
-
-RUN chmod 500 /root/fs*
 
 #Fix issue with apache2 dying prematurely
 RUN mkdir -p /run/apache2
 
 #Set file and directory permissions
-RUN chown -R apache /var/www/localhost/htdocs/openemr/ \
+RUN chown -R apache . \
     && find . -type d -not -path "./sites/default/documents/*" -not -perm 500 -exec chmod 500 {} \+ \
-    && find . -type f -not -path "./sites/default/documents/*" -not -path './openemr.sh' -not -perm 400 -exec chmod 400 {} \+ \
-    && chmod 500 openemr.sh /root/ssl.sh \
+    && find . -type f -not -path "./sites/default/documents/*" -not -perm 400 -exec chmod 400 {} \+ \
     && find sites/default/documents -not -perm 700 -exec chmod 700 {} \+ \
     && chmod 666 sites/default/sqlconf.php \
+    && chmod 000 auto_configure.php /root/unlock_admin.php \
+    && chmod 500 *.sh /root/*.sh \
     && chmod 755 /root/ \
     && chmod 444 /root/devtoolsLibrary.source /root/docker-version
 
