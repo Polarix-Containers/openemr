@@ -32,8 +32,8 @@ RUN apk -U upgrade \
         # Adding make separately from build-base here cuz we wanna keep it later
         build-base make \
     && sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/httpd.conf \
-    && rm -rf /var/cache/apk/* \
-    && npm update -g npm
+    && rm -rf /var/cache/apk/*
+    # && npm update -g npm
 
 RUN --network=none \
     usermod -u ${UID} apache \
