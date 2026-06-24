@@ -2,9 +2,9 @@ ARG FULL_VERSION=8.0.0.3
 ARG MAJOR_VERSION=8.0.0
 ARG UID=200007
 ARG GID=200007
-# https://github.com/openemr/openemr-devops/actions/runs/22974229834/job/66698628011#step:6:370
+# https://github.com/openemr/openemr/actions/runs/22974229834/job/66698628011#step:6:370
 ARG NODE=22
-# https://github.com/openemr/openemr-devops/blob/83140ff796bd00184165abf4835869e005c0bea9/docker/openemr/8.0.0/Dockerfile#L11
+# https://github.com/openemr/openemr/blob/rel-800/docker/release/Dockerfile#L11
 ARG PHP=php84
 
 FROM node:${NODE}-alpine
@@ -45,7 +45,7 @@ RUN --network=none \
 RUN rm -f /usr/bin/php \
     && ln -s /usr/bin/${PHP} /usr/bin/php \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
-    && git clone https://github.com/openemr/openemr.git --branch "v$(printf '%s' "$FULL_VERSION" | perl -pe 's/\.0$//; s/\./_/g;')" --depth 1 \
+    && git clone https://github.com/openemr/openemr.git --branch "rel-$(printf '%s' "$MAJOR_VERSION" | perl -pe 's/\.//g;')" --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
@@ -64,7 +64,12 @@ RUN rm -f /usr/bin/php \
     && composer clearcache \
     && npm cache clear --force \
     && rm -fr node_modules \
-    && cd ../ \
+    && cd docker/release/ \
+    && chmod 644 php.ini && mv php.ini /etc/$PHP/ \
+    && chmod 644 openemr.conf && mv openemr.conf /etc/apache2/conf.d/ \
+    && mv openemr.sh ssl.sh xdebug.sh auto_configure.php ../../ \
+    && mv utilities/* upgrade/* /root/ \
+    && cd ../../../ \
     && mv openemr /var/www/localhost/htdocs/ \
     && mkdir -p /etc/ssl/certs /etc/ssl/private \
     && apk del --no-cache build-base \
@@ -74,33 +79,6 @@ RUN rm -f /usr/bin/php \
     && sed -i 's/^ *TransferLog/#TransferLog/' /etc/apache2/conf.d/ssl.conf
 
 WORKDIR /var/www/localhost/htdocs/openemr
-
-#configure apache & php properly
-ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/php.ini /etc/${PHP}/php.ini
-ADD --chmod=644 https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/openemr.conf /etc/apache2/conf.d/
-
-#add runner and auto_configure and prevent auto_configure from being run w/o being enabled
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/openemr.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/ssl.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/xdebug.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/auto_configure.php .
-
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/devtoolsLibrary.source \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/unlock_admin.php \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/utilities/unlock_admin.sh /root
-
-#Bring in pieces used for automatic upgrade process
-ADD https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/docker-version \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-1.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-2.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-3.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-4.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-5.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-6.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-7.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-8.sh \
-    https://raw.githubusercontent.com/openemr/openemr-devops/refs/heads/master/docker/openemr/${MAJOR_VERSION}/upgrade/fsupgrade-9.sh \
-    /root
 
 #Fix issue with apache2 dying prematurely
 RUN mkdir -p /run/apache2
