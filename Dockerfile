@@ -53,7 +53,7 @@ RUN rm -f /usr/bin/php \
     && npm audit fix --audit-level=none \
     && npm run build \
     && cd ccdaservice \
-    && npm install \
+    && npm install --allow-git=root \
     && npm audit fix --audit-level=none \
     && cd ../ \
     && composer global require phing/phing \
