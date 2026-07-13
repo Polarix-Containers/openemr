@@ -44,14 +44,19 @@ RUN --network=none \
 
 RUN rm -f /usr/bin/php \
     && ln -s /usr/bin/${PHP} /usr/bin/php \
+    && echo 'Installing Composer' \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
+    && echo 'Cloning Git repo' \
     && git clone https://github.com/openemr/openemr.git --branch "rel-$(printf '%s' "$MAJOR_VERSION" | perl -pe 's/\.//g;')" --depth 1 \
     && rm -rf openemr/.git \
     && cd openemr \
+    && echo 'Installing PHP dependencies' \
     && composer install --no-dev \
+    && echo 'Installing Node.js dependencies' \
     && npm install \
     && npm audit fix --audit-level=none \
     && npm run build \
+    && echo 'Installing CCDA service' \
     && cd ccdaservice \
     && npm install --allow-git=root \
     && npm audit fix --audit-level=none \
