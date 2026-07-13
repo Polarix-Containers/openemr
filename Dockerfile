@@ -49,11 +49,11 @@ RUN rm -f /usr/bin/php \
     && rm -rf openemr/.git \
     && cd openemr \
     && composer install --no-dev \
-    && npm install --unsafe-perm \
+    && npm install \
     && npm audit fix --audit-level=none \
     && npm run build \
     && cd ccdaservice \
-    && npm install --unsafe-perm \
+    && npm install \
     && npm audit fix --audit-level=none \
     && cd ../ \
     && composer global require phing/phing \
