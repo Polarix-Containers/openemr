@@ -59,7 +59,7 @@ RUN rm -f /usr/bin/php \
     && echo 'Installing CCDA service' \
     && cd ccdaservice \
     && npm install --allow-git=root \
-    && npm audit fix --audit-level=none \
+    && npm audit fix --audit-level=none --allow-git=root \
     && cd ../ \
     && composer global require phing/phing \
     && /root/.composer/vendor/bin/phing vendor-clean \
