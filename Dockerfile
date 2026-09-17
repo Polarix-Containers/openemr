@@ -125,7 +125,7 @@ RUN --network=none \
 	&& find sites/default/documents -not -perm 700 -exec chmod 700 {} \+ \
 	&& chmod 666 sites/default/sqlconf.php \
 	&& chmod 000 auto_configure.php /root/unlock_admin.php \
-	&& chmod 500 *.sh /root/*.sh \
+	&& chmod 555 *.sh /root/*.sh \
 	&& chmod 755 /root/ \
 	&& chmod 444 /root/devtoolsLibrary.source /root/docker-version \
 	&& echo 'Installing Swarm templates' \
