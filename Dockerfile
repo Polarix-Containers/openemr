@@ -57,7 +57,7 @@ WORKDIR ${INSTALL_DIR}
 RUN apk -U upgrade \
 	&& echo 'Installing dependencies via apk' \
 	&& apk add libstdc++ \
-		apache2 apache2-proxy apache2-ssl apache2-utils curl dcron imagemagick mariadb-client \
+		apache2 apache2-proxy apache2-ssl apache2-utils bash curl dcron imagemagick mariadb-client \
 		mariadb-connector-c ncurses openssl openssl-dev perl rsync shadow tar \
 		${PHP} \
 		${PHP}-apache2 \
