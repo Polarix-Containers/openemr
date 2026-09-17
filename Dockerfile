@@ -49,7 +49,7 @@ COPY --chmod=755 workaround-date.sh /usr/local/bin/date
 
 # Import from previous build stages
 COPY --from=openemr-source /openemr ${INSTALL_DIR}
-COPY --from=openemr-assets /openemr/public /openemr/ccdaservice ${INSTALL_DIR}/
+COPY --from=openemr-assets --parents /openemr/./public /openemr/./ccdaservice ${INSTALL_DIR}/
 
 # Install Composer
 COPY --from=docker.io/composer/composer:latest-bin /composer /usr/bin/composer
