@@ -1,10 +1,10 @@
-ARG FULL_VERSION=8.3.0.0
-ARG MAJOR_VERSION=8.3.0
+ARG FULL_VERSION=8.4.0.0
+ARG MAJOR_VERSION=8.4.0
 ARG UID=200007
 ARG GID=200007
-# https://github.com/openemr/openemr/actions/runs/32111999780/job/95633320737#step:6:367
+# https://github.com/openemr/openemr/actions/runs/34748277993/job/103700142678#step:6:365
 ARG NODE=24
-# https://github.com/openemr/openemr/blob/rel-830/docker/release/Dockerfile#L30
+# https://github.com/openemr/openemr/blob/v8_4_0/docker/release/Dockerfile#L30
 ARG PHP=php85
 
 
@@ -14,7 +14,7 @@ ARG MAJOR_VERSION
 RUN apk -U upgrade \
 	&& apk add git perl \
 	&& cd / \
-	&& git clone https://github.com/openemr/openemr.git --branch "rel-$(printf '%s' "$MAJOR_VERSION" | perl -pe 's/\.//g;')" --depth 1 \
+	&& git clone https://github.com/openemr/openemr.git --branch "v$(printf '%s' "$MAJOR_VERSION" | perl -pe 's/\./_/g;')" --depth 1 \
 	&& rm -rf openemr/.git
 
 
