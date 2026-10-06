@@ -137,7 +137,7 @@ RUN --network=none \
 	&& rsync --owner --group --perms --delete --recursive --links /var/www/localhost/htdocs/openemr/sites /swarm-pieces/ \
 	&& rm -rf /tmp # Clean up trash
 
-COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
+COPY --from=ghcr.io/polarix-containers/hardened_malloc:2026081300 /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
 
 VOLUME [ "/etc/ssl" ]
