@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# This script is a workaround for upstream's use of su-exec. The Polarix Containers image is meant
+# to run as an unprivileged user, thus attempts to execute commands as another user will fail.
+#
+# The workaround implemented here is to run the specified command directly (as the current user).
+# This script implements the logic and is installed at `/usr/local/bin/su-exec`.
+
+exec "${@:2}"
+

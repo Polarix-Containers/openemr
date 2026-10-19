@@ -45,7 +45,7 @@ ARG PHP
 ENV APACHE_LOG_DIR=/var/log/apache2
 
 # Import from build context
-COPY --chmod=755 workaround-date.sh /usr/local/bin/date
+COPY --chmod=755 shims/date shims/su-exec /usr/local/bin/
 
 # Import from previous build stages
 COPY --from=openemr-source /openemr ${INSTALL_DIR}
@@ -135,7 +135,8 @@ RUN --network=none \
 	&& mkdir /swarm-pieces \
 	&& rsync --owner --group --perms --delete --recursive --links /etc/ssl /swarm-pieces/ \
 	&& rsync --owner --group --perms --delete --recursive --links /var/www/localhost/htdocs/openemr/sites /swarm-pieces/ \
-	&& rm -rf /tmp # Clean up trash
+	# Clean up trash
+	&& rm -rf /tmp
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:2026081300 /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
