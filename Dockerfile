@@ -1,10 +1,10 @@
-ARG FULL_VERSION=8.4.0.0
-ARG MAJOR_VERSION=8.4.0
+ARG FULL_VERSION=8.4.1.0
+ARG MAJOR_VERSION=8.4.1
 ARG UID=200007
 ARG GID=200007
-# https://github.com/openemr/openemr/actions/runs/34748277993/job/103700142678#step:6:365
+# https://github.com/openemr/openemr/actions/runs/35537220023/job/106148329989#step:6:357
 ARG NODE=24
-# https://github.com/openemr/openemr/blob/v8_4_0/docker/release/Dockerfile#L30
+# https://github.com/openemr/openemr/blob/v8_4_1/docker/release/Dockerfile#L30
 ARG PHP=php85
 
 
