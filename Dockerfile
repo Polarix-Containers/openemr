@@ -23,11 +23,7 @@ RUN apk -U upgrade \
 	&& echo 'Installing Node.js dependencies' \
 	&& npm install \
 	&& npm audit fix --audit-level=none \
-	&& npm run build \
-	&& echo 'Installing CCDA service' \
-	&& cd ccdaservice \
-	&& npm install --allow-git=root \
-	&& npm audit fix --audit-level=none --allow-git=root
+	&& npm run build
 
 
 
@@ -44,7 +40,7 @@ COPY --chmod=755 shims/date shims/su-exec /usr/local/bin/
 
 # Import from previous build stages
 COPY --from=openemr-source /openemr ${INSTALL_DIR}
-COPY --from=openemr-assets --parents /openemr/./public /openemr/./ccdaservice ${INSTALL_DIR}/
+COPY --from=openemr-assets --parents /openemr/./public ${INSTALL_DIR}/
 
 # Install Composer
 COPY --from=docker.io/composer/composer:latest-bin /composer /usr/bin/composer
